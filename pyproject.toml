@@ -1,0 +1,50 @@
+[project]
+name = "careerx"
+version = "0.1.0"
+description = "AI Resume Builder"
+readme = "README.md"
+authors = [
+    { name = "Anudeep Reddy Bondugula", email = "anudeepreddybondugula@gmail.com" }
+]
+requires-python = ">=3.13"
+
+dependencies = [
+    "google-genai>=2.17.0",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.15.0",
+    "python-dotenv>=1.2.2",
+    "rich>=15.0.0",
+    "typer>=0.27.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.2",
+]
+
+[project.scripts]
+careerx = "careerx.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+
+
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "UP",
+    "B",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
