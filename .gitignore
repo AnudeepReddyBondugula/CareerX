@@ -16,3 +16,7 @@ build/
 
 *.pdf
 *.tex
+
+.vscode/
+
+profile.json
