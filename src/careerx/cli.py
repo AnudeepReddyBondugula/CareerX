@@ -33,47 +33,26 @@ def generate(
         typer.Option(
             "--output",
             "-o",
-            help="Output PDF path.",
+            exists=True,
+            file_okay=False,
+            dir_okay=True,
+            writable=True,
+            help="Output Directory for generated files.",
         ),
     ],
-    profile: Annotated[
-        Path,
-        typer.Option(
-            "--profile",
-            "-p",
-            exists=True,
-            file_okay=True,
-            dir_okay=False,
-            help="Candidate profile JSON.",
-        ),
-    ] = Path("profile.json"),
-    resume_json: Annotated[
-        Path | None,
-        typer.Option(
-            "--resume-json",
-            "-r",
-            help="Write AI-tailored Resume JSON.",
-        ),
-    ] = None,
-    latex_output: Annotated[
-        Path | None,
-        typer.Option(
-            "--latex",
-            "-t",
-            help="Directory to write generated .tex/.cls files.",
-        ),
-    ] = None,
     theme: Annotated[
         str,
         typer.Option(
             "--theme",
             help="Resume template.",
         ),
-    ] = "modern",
+    ] = "treyHunner",
 ) -> None:
     """
     Generate an ATS-optimized resume.
     """
+    
+    output.mkdir(parents=True, exist_ok=True)
 
     typer.echo("Loading profile...")
 
@@ -83,7 +62,7 @@ def generate(
 
     from careerx.services.profile_service import ProfileService
 
-    profile_service = ProfileService(profile)
+    profile_service = ProfileService()
     resume = profile_service.load_profile()
 
     typer.echo("Profile loaded.")
@@ -96,7 +75,7 @@ def generate(
 
     jd_text = job_description.read_text(encoding="utf-8")
 
-    from careerx.builders import JobDescriptionParser
+    from careerx.builders.job_description_parser import JobDescriptionParser
 
     parser = JobDescriptionParser()
 
@@ -110,7 +89,7 @@ def generate(
 
     typer.echo("Generating tailored resume...")
 
-    from careerx.builders import ResumeBuilder
+    from careerx.builders.resume_builder import ResumeBuilder
 
     builder = ResumeBuilder()
 
@@ -124,16 +103,17 @@ def generate(
     # ------------------------------------------------------------------
     # Optional Resume JSON
     # ------------------------------------------------------------------
-    try:    
-        if resume_json is not None:
-            resume_json.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        resume_json: Path = output / "tailored_resume.json"
+        
+        resume_json.parent.mkdir(parents=True, exist_ok=True)
 
-            resume_json.write_text(
-                tailored_resume.model_dump_json(indent=4),
-                encoding="utf-8",
-            )
+        resume_json.write_text(
+            tailored_resume.model_dump_json(indent=4),
+            encoding="utf-8",
+        )
 
-            typer.echo(f"Resume JSON written to {resume_json}")
+        typer.echo(f"Tailored Resume JSON written to {resume_json}")
     except Exception as e:
         typer.secho(
             f"Failed to write Resume JSON: {e}",
@@ -145,20 +125,15 @@ def generate(
     # Module 8
     # ------------------------------------------------------------------
 
-    tex_path: Path | None = None
+    tex_path = output / "tailored_resume.tex"
 
-    if latex_output is not None:
-        latex_output.mkdir(parents=True, exist_ok=True)
+    from careerx.renderers import ResumeRenderer
 
-        tex_path = latex_output / "resume.tex"
+    renderer = ResumeRenderer(template_dir=Path("src/careerx/templates"))
 
-        from careerx.renderers import ResumeRenderer
+    renderer.render(resume=tailored_resume, output_path=tex_path, template_name=f"{theme}.tex.j2")
 
-        renderer = ResumeRenderer(template_dir=Path("src/careerx/templates"))
-
-        renderer.render(resume=tailored_resume, output_path=tex_path, template_name=f"{theme}.tex.j2")
-
-        typer.echo(f"LaTeX written to {tex_path}")
+    typer.echo(f"LaTeX written to {tex_path}")
 
     # ------------------------------------------------------------------
     # Module 9
@@ -166,13 +141,13 @@ def generate(
 
     typer.echo("Generating PDF...")
 
-    from careerx.renderers import PDFRenderer
+    from careerx.utils import PDFGenerator
 
-    pdf = PDFRenderer(theme=theme)
+    pdf = PDFGenerator()
 
-    pdf.compile(
-        resume=tailored_resume,
-        output_path=output,
+    pdf.generate(
+        tex_file=tex_path,
+        output_dir=output,
     )
 
     typer.secho(
@@ -185,9 +160,7 @@ def generate(
 def version() -> None:
     """Display CareerX version."""
 
-    from careerx import __version__
-
-    typer.echo(f"CareerX {__version__}")
+    typer.echo(f"CareerX 0.1.0")
 
 
 def main() -> None:

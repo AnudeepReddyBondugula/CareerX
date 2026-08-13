@@ -42,7 +42,7 @@ class ResumeRenderer:
         *,
         resume: Resume,
         output_path: Path,
-        template_name: str = "resume.tex.j2",
+        template_name: str = "treyHunner.tex.j2",
     ) -> Path:
         """
         Render a Resume into a LaTeX (.tex) file.

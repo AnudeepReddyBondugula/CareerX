@@ -26,6 +26,9 @@ Rules:
    - Experience
    - Projects
    - Skills
+7. Keep the resume concise, ideally within 1 (at most 2) pages.
+
+8. Keep Only top 3 most relevant projects or more production grade (if there aren't enough projects relevant).
 
 7. Improve wording for clarity, impact, and ATS optimization.
 
