@@ -1,0 +1,133 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Medium Length Professional CV
+% LaTeX Template
+% Version 2.0 (8/5/13)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Trey Hunner (http://www.treyhunner.com/)
+%
+% Important note:
+% This template requires the resume.cls file to be in the same directory as the
+% .tex file. The resume.cls file provides the resume style used for structuring the
+% document.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS 
+%----------------------------------------------------------------------------------------
+ 
+\documentclass{resume} % Use the custom resume.cls style 
+
+\usepackage[left=0.4 in,top=0.3 in,right=0.4 in,bottom=0.3in]{geometry} % Document margins
+\newcommand{\tab}[1]{\hspace{.2667\textwidth}\rlap{#1}}
+\newcommand{\itab}[1]{\hspace{0em}\rlap{#1}}
+\name{<< profile.full_name >>} % Your name 
+
+\usepackage{fontawesome5} % For the icons
+\usepackage[hidelinks]{hyperref}      % For the clickable links
+
+\address{ 
+    \faPhone* \ << profile.phone >> \addressSep 
+    \href{mailto:<< profile.email >>}{\faEnvelope\ << profile.email >>} \addressSep \ % 
+    \href{<< profile.linkedin >>}{\faLinkedin\ LinkedIn} \addressSep \ % 
+    \href{<< profile.github >>}{\faGithub\ GitHub}
+} % Your phone number and email
+
+\begin{document}  
+
+%-------------------------------------------------------------------------------
+%	EXPERIENCE
+
+\begin{rSection}{EXPERIENCE}
+
+<% for experience in experiences %>
+
+\begin{rSubsection}{<< experience.title >> - << experience.company >>} {<< experience.start_date >> - << experience.end_date >>}{}
+
+<% for achievement in experience.achievements %>
+\item << achievement >>
+<% endfor%>
+
+\end{rSubsection}  
+
+%------------------------------------------------
+
+<% endfor %>
+
+\end{rSection} 
+
+
+%-------------------------------------------------------------------------------
+%	PROJECTS
+
+\begin{rSection}{PROJECTS}
+
+<% for project in projects %>
+\begin{rSubsection}{{<< project.name >>} $|$ \textit{<< ", ".join(project.technologies) >>}}{}{}
+
+<% for points in project.description %>
+\item << points >>
+<% endfor %>
+
+\end{rSubsection}
+<% endfor %>
+
+\end{rSection} 
+
+%----------------------------------------------------------------------------------------
+%	TECHNICAL STRENGTHS SECTION
+%----------------------------------------------------------------------------------------
+
+\begin{rSection}{SKILLS and INTERESTS} \itemsep -15pt
+
+\item <% for skill in skills %>
+<< skill.name >><% if not loop.last %>, <% endif %>
+<% endfor %>
+
+\end{rSection}
+
+%----------------------------------------------------------------------------------------
+%	EDUCATION SECTION
+%----------------------------------------------------------------------------------------
+
+\begin{rSection}{Education}
+
+<% for edu in education %>
+
+{\bf << edu.institution >>} \hfill {<< edu.start_date >> - << edu.end_date >>} 
+\\
+<< edu.degree >> in << edu.field_of_study >>,  << edu.grade >>
+
+<% endfor %>
+
+\end{rSection} 
+
+
+%	Certificates and Achievements
+%----------------------------------------------------------------------------------------
+
+\begin{rSection}{CERTIFICATES/ACHIEVEMENTS}
+
+    \begin{list}{$\bullet$}{\leftmargin=0em \itemsep 0pt \parsep 0pt}
+
+    <% for achievement in achievements %>
+
+    \item << achievement.description >>
+
+    <% endfor %>
+
+    <% for certification in certifications %>
+
+    \item << certification.name >> - << certification.issuer >>
+
+    <% endfor %>
+
+    \end{list}
+
+\end{rSection}
+
+\end{document}

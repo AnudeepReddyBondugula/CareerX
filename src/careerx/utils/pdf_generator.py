@@ -83,6 +83,8 @@ class PDFGenerator:
         if result.returncode != 0:
             logger.error(result.stdout)
             logger.error(result.stderr)
+            
+            logger.error("LaTeX compilation failed. Check if you have install all the dependencies for Latex.")
 
             raise PDFGenerationError(
                 "LaTeX compilation failed.\n"

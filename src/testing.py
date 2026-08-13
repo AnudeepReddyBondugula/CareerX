@@ -13,7 +13,8 @@ renderer = ResumeRenderer(
 
 renderer.render(
     resume=resume,
-    output_path=Path("output/resume.tex"),
+    output_path=Path("output/treyHunner.tex"),
+    template_name="treyHunner.tex.j2"
 )
 
 
@@ -24,7 +25,7 @@ from careerx.utils import PDFGenerator
 generator = PDFGenerator()
 
 pdf_path = generator.generate(
-    tex_file=Path("output/resume.tex"),
+    tex_file=Path("output/treyHunner.tex"),
     output_dir=Path("output"),
 )
 
