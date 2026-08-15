@@ -53,10 +53,7 @@ class PDFGenerator:
             raise FileNotFoundError(f"{tex_file} does not exist.")
 
         if shutil.which(self.LATEX_COMMAND) is None:
-            raise PDFGenerationError(
-                "pdflatex was not found. "
-                "Please install TeX Live or MiKTeX."
-            )
+            raise PDFGenerationError("pdflatex was not found. Please install TeX Live or MiKTeX.")
 
         output_dir.mkdir(
             parents=True,
@@ -83,20 +80,15 @@ class PDFGenerator:
         if result.returncode != 0:
             logger.error(result.stdout)
             logger.error(result.stderr)
-            
+
             logger.error("LaTeX compilation failed. Check if you have install all the dependencies for Latex.")
 
-            raise PDFGenerationError(
-                "LaTeX compilation failed.\n"
-                f"{result.stderr}"
-            )
+            raise PDFGenerationError(f"LaTeX compilation failed.\n{result.stderr}")
 
         pdf_file = output_dir / f"{tex_file.stem}.pdf"
 
         if not pdf_file.exists():
-            raise PDFGenerationError(
-                "PDF compilation completed but output PDF was not found."
-            )
+            raise PDFGenerationError("PDF compilation completed but output PDF was not found.")
 
         logger.info("PDF generated successfully: %s", pdf_file)
 

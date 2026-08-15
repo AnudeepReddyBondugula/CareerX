@@ -2,6 +2,7 @@ from pathlib import Path
 
 from careerx.renderers.resume_renderer import ResumeRenderer
 from careerx.services.profile_service import ProfileService
+from careerx.utils import PDFGenerator
 
 profile_service = ProfileService()
 
@@ -14,13 +15,9 @@ renderer = ResumeRenderer(
 renderer.render(
     resume=resume,
     output_path=Path("output/treyHunner.tex"),
-    template_name="treyHunner.tex.j2"
+    template_name="treyHunner.tex.j2",
 )
 
-
-from pathlib import Path
-
-from careerx.utils import PDFGenerator
 
 generator = PDFGenerator()
 

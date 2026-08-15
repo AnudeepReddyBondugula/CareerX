@@ -51,7 +51,7 @@ def generate(
     """
     Generate an ATS-optimized resume.
     """
-    
+
     output.mkdir(parents=True, exist_ok=True)
 
     typer.echo("Loading profile...")
@@ -105,7 +105,7 @@ def generate(
     # ------------------------------------------------------------------
     try:
         resume_json: Path = output / "tailored_resume.json"
-        
+
         resume_json.parent.mkdir(parents=True, exist_ok=True)
 
         resume_json.write_text(
@@ -160,7 +160,7 @@ def generate(
 def version() -> None:
     """Display CareerX version."""
 
-    typer.echo(f"CareerX 0.1.0")
+    typer.echo("CareerX 0.1.0")
 
 
 def main() -> None:
