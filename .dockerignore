@@ -1,0 +1,13 @@
+.git
+.github
+.venv
+.ruff_cache
+.pytest_cache
+__pycache__
+*.pyc
+tests
+output
+*.pdf
+*.log
+.env
+profile.json

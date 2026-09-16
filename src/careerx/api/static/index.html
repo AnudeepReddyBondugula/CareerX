@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CareerX</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --surface: #171a21;
+    --surface-2: #1e222b;
+    --border: #2a2f3a;
+    --text: #e6e8ec;
+    --muted: #9aa3b2;
+    --accent: #5b8def;
+    --accent-ink: #ffffff;
+    --good: #3fb950;
+    --warn: #d29922;
+    --bad: #f85149;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f6f7f9; --surface: #ffffff; --surface-2: #f0f2f5; --border: #d8dce3;
+      --text: #1a1d23; --muted: #5b6472;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 16px 64px; }
+  header { margin-bottom: 28px; }
+  h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); margin: 0; }
+  .grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
+  @media (min-width: 860px) { .grid { grid-template-columns: 1fr 1fr; } }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px;
+  }
+  .card h2 { margin: 0 0 14px; font-size: 15px; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--muted); }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 6px; }
+  input[type=file], select, textarea, input[type=text] {
+    width: 100%; background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px;
+    font: inherit;
+  }
+  textarea { min-height: 220px; resize: vertical; font-size: 13px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .row > * { flex: 1 1 160px; }
+  .check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); flex: 0 0 auto; }
+  .check input { accent-color: var(--accent); }
+  button {
+    background: var(--accent); color: var(--accent-ink); border: 0;
+    border-radius: 8px; padding: 11px 18px; font: inherit; font-weight: 600;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.55; cursor: not-allowed; }
+  button.secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+  .actions { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .status { font-size: 13px; color: var(--muted); }
+  .status.error { color: var(--bad); }
+  .hidden { display: none !important; }
+  .pill {
+    display: inline-block; font-size: 12px; padding: 2px 9px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--muted);
+    margin: 0 6px 6px 0;
+  }
+  .pill.good { color: var(--good); border-color: color-mix(in srgb, var(--good) 40%, var(--border)); }
+  .pill.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, var(--border)); }
+  .pill.bad  { color: var(--bad);  border-color: color-mix(in srgb, var(--bad)  40%, var(--border)); }
+  .bar { height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin: 4px 0 10px; }
+  .bar > span { display: block; height: 100%; background: var(--accent); }
+  ul.plain { list-style: none; padding: 0; margin: 0; }
+  ul.plain li { padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  ul.plain li:last-child { border-bottom: 0; }
+  .score { color: var(--muted); font-variant-numeric: tabular-nums; }
+  details { margin-top: 12px; }
+  summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+  pre {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px; overflow: auto; max-height: 340px; font-size: 12px; margin: 10px 0 0;
+  }
+  a { color: var(--accent); }
+  footer { margin-top: 36px; color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>CareerX</h1>
+    <p class="sub">Upload your complete profile and a job posting. Get back a tailored, ATS-optimised LaTeX resume &mdash; with every claim traced back to your profile.</p>
+    <div id="meta" style="margin-top:12px"></div>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Input</h2>
+      <form id="form">
+        <label for="profile">Profile JSON
+          (<a href="/api/v1/profile/example" target="_blank" rel="noreferrer">example</a> &middot;
+           <a href="/api/v1/profile/schema" target="_blank" rel="noreferrer">schema</a>)</label>
+        <input id="profile" type="file" accept="application/json,.json" required />
+
+        <label for="jd">Job description</label>
+        <textarea id="jd" placeholder="Paste the full job posting here&hellip;" required></textarea>
+
+        <div class="row" style="margin-top:14px">
+          <div>
+            <label for="template" style="margin-top:0">Template</label>
+            <select id="template"></select>
+          </div>
+          <label class="check"><input id="pdf" type="checkbox" checked /> Compile PDF</label>
+        </div>
+
+        <div class="actions">
+          <button id="submit" type="submit">Generate resume</button>
+          <button id="demo" type="button" class="secondary">Load example</button>
+          <span id="status" class="status"></span>
+        </div>
+      </form>
+    </section>
+
+    <section class="card hidden" id="results">
+      <h2>Result</h2>
+      <div id="downloads" class="actions" style="margin-top:0"></div>
+      <div id="warnings"></div>
+
+      <div id="coverage"></div>
+
+      <details id="ranking-wrap">
+        <summary>Why these sections were chosen</summary>
+        <ul class="plain" id="ranking"></ul>
+      </details>
+
+      <details>
+        <summary>Generated LaTeX</summary>
+        <pre id="latex"></pre>
+      </details>
+
+      <details>
+        <summary>Full API response</summary>
+        <pre id="raw"></pre>
+      </details>
+    </section>
+  </div>
+
+  <footer>
+    Nothing is stored beyond the run's TTL. See <a href="/docs">/docs</a> for the API.
+  </footer>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const statusEl = $("status");
+
+let meta = null;
+
+function setStatus(text, isError = false) {
+  statusEl.textContent = text;
+  statusEl.classList.toggle("error", isError);
+}
+
+async function loadMeta() {
+  try {
+    meta = await (await fetch("/api/v1/meta")).json();
+  } catch {
+    $("meta").innerHTML = '<span class="pill bad">Server unreachable</span>';
+    return;
+  }
+
+  const pills = [
+    `<span class="pill">${meta.llm_provider}${meta.chat_model ? " &middot; " + meta.chat_model : ""}</span>`,
+    meta.llm_configured
+      ? '<span class="pill good">LLM ready</span>'
+      : '<span class="pill bad">LLM not configured</span>',
+    meta.embedding_backend ? `<span class="pill">embeddings: ${meta.embedding_backend}</span>` : "",
+    meta.pdf_supported
+      ? `<span class="pill good">PDF via ${meta.latex_engine}</span>`
+      : '<span class="pill warn">No LaTeX engine &mdash; .tex only</span>',
+  ];
+  $("meta").innerHTML = pills.join("");
+
+  $("template").innerHTML = meta.templates
+    .map((t) => `<option value="${t.name}"${t.is_default ? " selected" : ""}>${t.name}</option>`)
+    .join("");
+
+  if (!meta.pdf_supported) $("pdf").checked = false;
+}
+
+$("demo").addEventListener("click", async () => {
+  setStatus("Loading example…");
+  const example = await (await fetch("/api/v1/profile/example")).json();
+
+  const file = new File([JSON.stringify(example, null, 2)], "profile.json", { type: "application/json" });
+  const transfer = new DataTransfer();
+  transfer.items.add(file);
+  $("profile").files = transfer.files;
+
+  $("jd").value = `Senior Backend Engineer - Payments Platform
+
+We are looking for a backend engineer to own the services behind our payments
+platform. You will design and operate high-throughput Python services and raise
+the reliability bar for the team.
+
+Responsibilities
+- Design, build and operate Python microservices handling millions of events daily.
+- Own service reliability, including on-call, alerting and incident review.
+- Improve our CI/CD pipelines and automated test coverage.
+
+Requirements
+- 4+ years of backend engineering experience in Python.
+- Strong experience with FastAPI or a comparable async web framework.
+- Production experience with PostgreSQL and schema migrations.
+- Experience with containerised deployments (Docker, Kubernetes).
+
+Nice to have
+- Experience with Kafka or another event streaming platform.
+- Familiarity with Terraform.`;
+
+  setStatus("Example loaded. Press Generate.");
+});
+
+$("form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const file = $("profile").files[0];
+  if (!file) return setStatus("Choose a profile JSON file first.", true);
+
+  const body = new FormData();
+  body.append("profile", file);
+  body.append("job_description", $("jd").value);
+  body.append("template", $("template").value);
+  body.append("compile_pdf", $("pdf").checked ? "true" : "false");
+
+  $("submit").disabled = true;
+  setStatus("Retrieving evidence and generating… this takes 15–60s.");
+
+  try {
+    const response = await fetch("/api/v1/generate/upload", { method: "POST", body });
+    const data = await response.json();
+
+    if (!response.ok) {
+      setStatus(`${data.error || "Error"}: ${data.detail || response.statusText}`, true);
+      return;
+    }
+
+    render(data);
+    setStatus(`Done in ${Object.values(data.timings_ms || {}).reduce((a, b) => a + b, 0)}ms.`);
+  } catch (error) {
+    setStatus(`Request failed: ${error.message}`, true);
+  } finally {
+    $("submit").disabled = false;
+  }
+});
+
+function render(data) {
+  $("results").classList.remove("hidden");
+  $("raw").textContent = JSON.stringify(data, null, 2);
+  $("latex").textContent = data.latex || "(not returned)";
+
+  const links = [];
+  if (data.artifacts.pdf) links.push(`<a href="${data.artifacts.pdf}"><button type="button">Download PDF</button></a>`);
+  links.push(`<a href="${data.artifacts.latex}"><button type="button" class="secondary">Download .tex</button></a>`);
+  links.push(`<a href="${data.artifacts.resume_json}"><button type="button" class="secondary">Download JSON</button></a>`);
+  $("downloads").innerHTML = links.join(" ");
+
+  const warnings = [];
+  if (!data.pdf_available && data.pdf_unavailable_reason) {
+    warnings.push(`<p class="status">PDF not produced: ${escapeHtml(data.pdf_unavailable_reason)}</p>`);
+  }
+
+  const issues = data.report?.grounding_issues || [];
+  if (issues.length) {
+    warnings.push(
+      `<p class="status"><strong>${issues.length} unsupported item(s) removed</strong> before rendering:</p>` +
+        `<ul class="plain">${issues.map((i) => `<li>${escapeHtml(i.detail)}</li>`).join("")}</ul>`
+    );
+  }
+  $("warnings").innerHTML = warnings.join("");
+
+  const coverage = data.report?.coverage;
+  if (coverage) {
+    const total = coverage.covered.length + coverage.partially_covered.length + coverage.uncovered.length;
+    const pct = total ? Math.round(((coverage.covered.length + 0.5 * coverage.partially_covered.length) / total) * 100) : 0;
+
+    $("coverage").innerHTML =
+      `<label style="margin-top:16px">Requirement coverage &mdash; ${pct}% of ${total} requirement(s)</label>` +
+      `<div class="bar"><span style="width:${pct}%"></span></div>` +
+      `<span class="pill good">${coverage.covered.length} well supported</span>` +
+      `<span class="pill warn">${coverage.partially_covered.length} partial</span>` +
+      `<span class="pill bad">${coverage.uncovered.length} gap</span>` +
+      (coverage.uncovered.length
+        ? `<details><summary>Gaps the resume deliberately does not claim</summary><ul class="plain">${coverage.uncovered
+            .map((r) => `<li>${escapeHtml(r)}</li>`)
+            .join("")}</ul></details>`
+        : "");
+  }
+
+  const ranking = data.report?.section_scores || [];
+  $("ranking-wrap").classList.toggle("hidden", ranking.length === 0);
+  $("ranking").innerHTML = ranking
+    .slice(0, 12)
+    .map(
+      (s) =>
+        `<li><strong>${escapeHtml(s.label || s.section_id)}</strong> <span class="pill">${s.kind}</span>` +
+        `<span class="score" style="float:right">${s.score.toFixed(2)} &middot; ${s.matched_requirements.length} match(es)</span></li>`
+    )
+    .join("");
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]
+  );
+}
+
+loadMeta();
+</script>
+</body>
+</html>
