@@ -1,7 +1,7 @@
 [project]
 name = "careerx"
-version = "0.1.0"
-description = "AI Resume Builder"
+version = "0.2.0"
+description = "AI-powered, RAG-grounded ATS resume builder with a FastAPI web service and LaTeX/PDF output"
 readme = "README.md"
 authors = [
     { name = "Anudeep Reddy Bondugula", email = "anudeepreddybondugula@gmail.com" }
@@ -9,7 +9,13 @@ authors = [
 requires-python = ">=3.13"
 
 dependencies = [
+    "fastapi>=0.121.0",
+    "uvicorn[standard]>=0.38.0",
+    "python-multipart>=0.0.20",
     "google-genai>=2.17.0",
+    "openai>=2.0.0",
+    "faiss-cpu>=1.12.0",
+    "numpy>=2.1.0",
     "jinja2>=3.1.6",
     "pydantic>=2.13.4",
     "pydantic-settings>=2.15.0",
@@ -18,9 +24,19 @@ dependencies = [
     "typer>=0.27.1",
 ]
 
+[project.optional-dependencies]
+# Optional, heavyweight: enables a local sentence-transformers embedding backend.
+# Not installed in the default Docker image because the free hosting tiers this
+# project targets have ~512 MB of RAM, which torch does not fit into.
+local-embeddings = [
+    "sentence-transformers>=3.0.0",
+]
+
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
+    "pytest-asyncio>=1.0.0",
+    "httpx>=0.28.0",
     "ruff>=0.16.2",
 ]
 
@@ -31,21 +47,18 @@ careerx = "careerx.cli:app"
 requires = ["uv_build>=0.12.3,<0.13.0"]
 build-backend = "uv_build"
 
-
-
 [tool.ruff]
 line-length = 120
 target-version = "py313"
 
 [tool.ruff.lint]
-select = [
-    "E",
-    "F",
-    "I",
-    "UP",
-    "B",
-]
+select = ["E", "F", "I", "UP", "B"]
 
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = ["error::DeprecationWarning:careerx.*"]

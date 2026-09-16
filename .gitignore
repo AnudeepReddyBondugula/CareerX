@@ -1,28 +1,30 @@
+# Python
 __pycache__/
-*.pyc
-
+*.py[cod]
 .venv/
-.env
-
-.pytest_cache/
-
-.ruff_cache/
-
-.idea/
-.vscode/
-
+*.egg-info/
 dist/
 build/
 
-*.pdf
-*.tex
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
+# Editors
+.idea/
 .vscode/
 
+# Secrets and personal data
+.env
 profile.json
 
-rough.txt
-
-jd.txt
-
-tailored_resume.json
+# Generated output
+output/
+*.pdf
+*.aux
+*.log
+*.out
+!src/careerx/templates/**

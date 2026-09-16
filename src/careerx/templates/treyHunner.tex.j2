@@ -1,133 +1,116 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Medium Length Professional CV
-% LaTeX Template
-% Version 2.0 (8/5/13)
-%
-% This template has been downloaded from:
-% http://www.LaTeXTemplates.com
-%
-% Original author:
-% Trey Hunner (http://www.treyhunner.com/)
-%
-% Important note:
-% This template requires the resume.cls file to be in the same directory as the
-% .tex file. The resume.cls file provides the resume style used for structuring the
-% document.
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<# ===================================================================== #>
+<# CareerX - Trey Hunner resume template                                  #>
+<#                                                                        #>
+<# Jinja delimiters are remapped to avoid clashing with LaTeX braces:      #>
+<# expressions use angle-brackets, statements use angle-percent, and these #>
+<# comments use angle-hash.                                                #>
+<#                                                                        #>
+<# Every interpolated value is LaTeX-escaped by the renderer's `finalize`  #>
+<# hook. Hyperlink targets are pre-escaped as LatexSafe by the renderer.   #>
+<#                                                                        #>
+<# Requires assets/resume.cls (Trey Hunner, via LaTeXTemplates.com) and    #>
+<# the fontawesome5 package.                                              #>
+<# ===================================================================== #>
+\documentclass{resume}
 
-%----------------------------------------------------------------------------------------
-%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS 
-%----------------------------------------------------------------------------------------
- 
-\documentclass{resume} % Use the custom resume.cls style 
+\usepackage[left=0.4in,top=0.3in,right=0.4in,bottom=0.3in]{geometry}
+\usepackage{array}
+\usepackage{fontawesome5}
+\usepackage[hidelinks]{hyperref}
 
-\usepackage[left=0.4 in,top=0.3 in,right=0.4 in,bottom=0.3in]{geometry} % Document margins
-\newcommand{\tab}[1]{\hspace{.2667\textwidth}\rlap{#1}}
-\newcommand{\itab}[1]{\hspace{0em}\rlap{#1}}
-\name{<< profile.full_name >>} % Your name 
+\name{<< profile.full_name >>}
 
-\usepackage{fontawesome5} % For the icons
-\usepackage[hidelinks]{hyperref}      % For the clickable links
+<% if contact_links %>
+\address{
+<% for link in contact_links %>
+<% if not loop.first %>
+    \addressSep\ 
+<% endif %>
+<% if link.target %>
+    \href{<< link.target >>}{<< link.icon >>\ << link.label >>}
+<% else %>
+    << link.icon >>\ << link.label >>
+<% endif %>
+<% endfor %>
+}
+<% endif %>
 
-\address{ 
-    \faPhone* \ << profile.phone >> \addressSep 
-    \href{mailto:<< profile.email >>}{\faEnvelope\ << profile.email >>} \addressSep \ % 
-    \href{<< profile.linkedin >>}{\faLinkedin\ LinkedIn} \addressSep \ % 
-    \href{<< profile.github >>}{\faGithub\ GitHub}
-} % Your phone number and email
+\begin{document}
 
-\begin{document}  
+<% if summary %>
+\begin{rSection}{SUMMARY}
+<< summary >>
+\end{rSection}
+<% endif %>
 
-%-------------------------------------------------------------------------------
-%	EXPERIENCE
-
+<% if experiences %>
 \begin{rSection}{EXPERIENCE}
-
 <% for experience in experiences %>
-
-\begin{rSubsection}{<< experience.title >> - << experience.company >>} {<< experience.start_date >> - << experience.end_date >>}{}
-
+\begin{rSubsection}{<< experience.company >>}{<< experience.start_date >><% if experience.end_date %> -- << experience.end_date >><% endif %>}{<< experience.title >>}{<< experience.location >>}
 <% for achievement in experience.achievements %>
 \item << achievement >>
-<% endfor%>
-
-\end{rSubsection}  
-
-%------------------------------------------------
-
 <% endfor %>
-
-\end{rSection} 
-
-
-%-------------------------------------------------------------------------------
-%	PROJECTS
-
-\begin{rSection}{PROJECTS}
-
-<% for project in projects %>
-\begin{rSubsection}{{<< project.name >>} $|$ \textit{<< ", ".join(project.technologies) >>}}{}{}
-
-<% for points in project.description %>
-\item << points >>
-<% endfor %>
-
+<% if not experience.achievements %>
+\item[] <# an rSubsection body is a LaTeX list, which must not be empty #>
+<% endif %>
 \end{rSubsection}
 <% endfor %>
-
-\end{rSection} 
-
-%----------------------------------------------------------------------------------------
-%	TECHNICAL STRENGTHS SECTION
-%----------------------------------------------------------------------------------------
-
-\begin{rSection}{SKILLS and INTERESTS} \itemsep -15pt
-
-\item <% for skill in skills %>
-<< skill.name >><% if not loop.last %>, <% endif %>
-<% endfor %>
-
 \end{rSection}
+<% endif %>
 
-%----------------------------------------------------------------------------------------
-%	EDUCATION SECTION
-%----------------------------------------------------------------------------------------
+<% if projects %>
+\begin{rSection}{PROJECTS}
+<% for project in projects %>
+\begin{rSubsection}{<< project.name >><% if project.technologies %> $|$ \textit{<< project.technologies | join(", ") >>}<% endif %>}{}{}{}
+<% for point in project.description %>
+\item << point >>
+<% endfor %>
+<% if project.github or project.live_demo %>
+\item <% if project.github %>\href{<< project.github | url >>}{\faGithub\ Source}<% endif %><% if project.github and project.live_demo %> \quad <% endif %><% if project.live_demo %>\href{<< project.live_demo | url >>}{\faExternalLinkAlt\ Live demo}<% endif %>
 
-\begin{rSection}{Education}
+<% endif %>
+<% if not project.description and not project.github and not project.live_demo %>
+\item[]
+<% endif %>
+\end{rSubsection}
+<% endfor %>
+\end{rSection}
+<% endif %>
 
+<% if skill_groups %>
+\begin{rSection}{SKILLS}
+\begin{tabular}{@{} >{\bfseries}l @{\hspace{4ex}} p{0.76\textwidth} @{}}
+<% for category, names in skill_groups %>
+<< category >> & << names | join(", ") >> \\
+<% endfor %>
+\end{tabular}
+\end{rSection}
+<% endif %>
+
+<% if education %>
+\begin{rSection}{EDUCATION}
 <% for edu in education %>
-
-{\bf << edu.institution >>} \hfill {<< edu.start_date >> - << edu.end_date >>} 
+{\bf << edu.institution >>} \hfill << edu.start_date >><% if edu.end_date %> -- << edu.end_date >><% endif %>
 \\
-<< edu.degree >> in << edu.field_of_study >>,  << edu.grade >>
+<< edu.degree >><% if edu.field_of_study %> in << edu.field_of_study >><% endif %><% if edu.grade %>, << edu.grade >><% endif %>
 
 <% endfor %>
-
-\end{rSection} 
-
-
-%	Certificates and Achievements
-%----------------------------------------------------------------------------------------
-
-\begin{rSection}{CERTIFICATES/ACHIEVEMENTS}
-
-    \begin{list}{$\bullet$}{\leftmargin=0em \itemsep 0pt \parsep 0pt}
-
-    <% for achievement in achievements %>
-
-    \item << achievement.description >>
-
-    <% endfor %>
-
-    <% for certification in certifications %>
-
-    \item << certification.name >> - << certification.issuer >>
-
-    <% endfor %>
-
-    \end{list}
-
 \end{rSection}
+<% endif %>
+
+<% if achievements or certifications %>
+\begin{rSection}{CERTIFICATIONS \& ACHIEVEMENTS}
+\begin{list}{$\bullet$}{\leftmargin=1.5em \itemsep 0pt \parsep 0pt}
+<% for achievement in achievements %>
+\item {\bf << achievement.title >>}<% if achievement.description %> --- << achievement.description >><% endif %>
+
+<% endfor %>
+<% for certification in certifications %>
+\item << certification.name >><% if certification.issuer %> --- << certification.issuer >><% endif %>
+
+<% endfor %>
+\end{list}
+\end{rSection}
+<% endif %>
 
 \end{document}

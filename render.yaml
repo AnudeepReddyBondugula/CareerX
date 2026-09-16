@@ -1,0 +1,36 @@
+# Render blueprint - https://render.com/docs/blueprint-spec
+#
+# The free instance type sleeps after inactivity and has 512 MB of RAM, which
+# is why the image does not bundle torch: EMBEDDING_BACKEND stays on `auto`,
+# which uses the provider's embedding API and falls back to the dependency-free
+# hashing backend rather than loading a local model.
+services:
+  - type: web
+    name: careerx
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_FORMAT
+        value: json
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: EMBEDDING_BACKEND
+        value: auto
+      - key: ARTIFACT_DIR
+        value: /var/lib/careerx/artifacts
+      - key: ARTIFACT_TTL_SECONDS
+        value: "1800"
+      - key: RATE_LIMIT_REQUESTS
+        value: "10"
+      - key: RATE_LIMIT_WINDOW_SECONDS
+        value: "60"

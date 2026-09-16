@@ -1,0 +1,127 @@
+<# ===================================================================== #>
+<# CareerX - Classic resume template                                      #>
+<#                                                                        #>
+<# Deliberately dependency-light: stock `article` plus packages in every   #>
+<# minimal TeX installation. No custom .cls, no fontawesome. This is the   #>
+<# template to fall back to when a TeX environment cannot fetch packages.  #>
+<# ===================================================================== #>
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage[left=0.6in,top=0.5in,right=0.6in,bottom=0.5in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlist[itemize]{leftmargin=1.2em, itemsep=0pt, topsep=2pt, parsep=0pt}
+
+\titleformat{\section}{\large\bfseries\scshape}{}{0pt}{}[\vspace{-0.6em}\rule{\textwidth}{0.6pt}]
+\titlespacing*{\section}{0pt}{1.0em}{0.5em}
+
+\begin{document}
+
+\begin{center}
+    {\LARGE \bfseries << profile.full_name >>}
+<% if profile.headline %>
+    \\[0.25em]
+    << profile.headline >>
+<% endif %>
+<% if contact_links %>
+    \\[0.35em]
+<% for link in contact_links %>
+<% if not loop.first %>
+    $\diamond$
+<% endif %>
+<% if link.target %>
+    \href{<< link.target >>}{<< link.label >>}
+<% else %>
+    << link.label >>
+<% endif %>
+<% endfor %>
+<% endif %>
+\end{center}
+
+<% if summary %>
+\section{Summary}
+<< summary >>
+<% endif %>
+
+<% if experiences %>
+\section{Experience}
+<% for experience in experiences %>
+\textbf{<< experience.company >>} \hfill << experience.start_date >><% if experience.end_date %> -- << experience.end_date >><% endif %>
+\\
+\textit{<< experience.title >>}<% if experience.location %> \hfill \textit{<< experience.location >>}<% endif %>
+
+<% if experience.achievements %>
+\begin{itemize}
+<% for achievement in experience.achievements %>
+    \item << achievement >>
+<% endfor %>
+\end{itemize}
+<% endif %>
+\vspace{0.4em}
+
+<% endfor %>
+<% endif %>
+
+<% if projects %>
+\section{Projects}
+<% for project in projects %>
+\textbf{<< project.name >>}<% if project.technologies %> \hfill \textit{<< project.technologies | join(", ") >>}<% endif %>
+
+<% if project.description or project.github or project.live_demo %>
+\begin{itemize}
+<% for point in project.description %>
+    \item << point >>
+<% endfor %>
+<% if project.github %>
+    \item Source: \href{<< project.github | url >>}{<< project.github >>}
+<% endif %>
+<% if project.live_demo %>
+    \item Live demo: \href{<< project.live_demo | url >>}{<< project.live_demo >>}
+<% endif %>
+\end{itemize}
+<% endif %>
+\vspace{0.4em}
+
+<% endfor %>
+<% endif %>
+
+<% if skill_groups %>
+\section{Skills}
+\begin{tabular}{@{} >{\bfseries}l @{\hspace{3ex}} p{0.78\textwidth} @{}}
+<% for category, names in skill_groups %>
+<< category >> & << names | join(", ") >> \\
+<% endfor %>
+\end{tabular}
+<% endif %>
+
+<% if education %>
+\section{Education}
+<% for edu in education %>
+\textbf{<< edu.institution >>} \hfill << edu.start_date >><% if edu.end_date %> -- << edu.end_date >><% endif %>
+\\
+<< edu.degree >><% if edu.field_of_study %> in << edu.field_of_study >><% endif %><% if edu.grade %>, << edu.grade >><% endif %>
+\vspace{0.3em}
+
+<% endfor %>
+<% endif %>
+
+<% if achievements or certifications %>
+\section{Certifications \& Achievements}
+\begin{itemize}
+<% for achievement in achievements %>
+    \item \textbf{<< achievement.title >>}<% if achievement.description %> --- << achievement.description >><% endif %>
+
+<% endfor %>
+<% for certification in certifications %>
+    \item << certification.name >><% if certification.issuer %> --- << certification.issuer >><% endif %>
+
+<% endfor %>
+\end{itemize}
+<% endif %>
+
+\end{document}
